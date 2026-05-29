@@ -257,6 +257,30 @@ header p { font-size: 12px; color: #888; margin-top: 4px; }
   border-left: 3px solid #888;
 }
 
+/* GUIDE */
+.guide {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.guide h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+  color: #1a1a2e;
+}
+.guide h3:first-child { margin-top: 0; }
+.guide li { margin: 6px 0 6px 20px; font-size: 13px; color: #444; }
+.guide li code {
+  background: #eee;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #c0392b;
+}
+.guide li a { color: #1565c0; }
+
 @media (max-width: 600px) {
   body { font-size: 13px; }
   #app { padding: 10px; }
@@ -278,6 +302,7 @@ header p { font-size: 12px; color: #888; margin-top: 4px; }
     <button class="tab active" data-tab="8085">8085 Programs</button>
     <button class="tab" data-tab="8086">8086 Programs</button>
     <button class="tab" data-tab="viva">Viva Cheat Sheet</button>
+    <button class="tab" data-tab="guide">Tech Guide</button>
   </div>
 
   <!-- 8085 Tab -->
@@ -337,6 +362,11 @@ header p { font-size: 12px; color: #888; margin-top: 4px; }
   <!-- Viva Tab -->
   <div id="tab-viva" class="tab-content">
     <div id="viva-content"></div>
+  </div>
+
+  <!-- Guide Tab -->
+  <div id="tab-guide" class="tab-content">
+    <div class="guide" id="guide-content"></div>
   </div>
 
 </div>
@@ -933,6 +963,187 @@ const VIVA_DATA = [
 ];
 
 /* =========================================================
+   ADVANCED VIVA DATA
+   ========================================================= */
+const ADVANCED_VIVA = [
+  {
+    q: "Explain the interrupt structure of 8085. What are vectored and non-vectored interrupts?",
+    a: "The 8085 has 5 hardware interrupts: TRAP (RST 4.5), RST 7.5, RST 6.5, RST 5.5, and INTR. TRAP is highest priority, INTR is lowest. RST 5.5, 6.5, 7.5 are vectored interrupts — they transfer control to fixed memory locations (RST 5.5 → 002CH, RST 6.5 → 0034H, RST 7.5 → 003CH) without external hardware. TRAP also vectored (to 0024H). INTR is non-vectored — the 8085 acknowledges the interrupt and waits for an external instruction (usually CALL) on the data bus to know where to jump. The 8085 also has software interrupt RST 0-7 (RST n → PC = 8 × n)."
+  },
+  {
+    q: "What is the difference between MUL and DIV in 8086? How are results stored?",
+    a: "MUL (unsigned) and IMUL (signed) multiply: For 8-bit: AL × r/m8 → AX (16-bit result, full result in AX). For 16-bit: AX × r/m16 → DX:AX (upper 16 bits in DX, lower in AX). No result stored directly in flags, but CF=OF=0 if upper half is zero, else CF=OF=1. DIV (unsigned) and IDIV (signed) divide: For 8-bit: AX ÷ r/m8 → AL (quotient), AH (remainder). For 16-bit: DX:AX ÷ r/m16 → AX (quotient), DX (remainder). Division by zero or quotient overflow (result too large for destination) generates a Type 0 interrupt."
+  },
+  {
+    q: "What is the difference between the 8085 and 8086 instruction queue?",
+    a: "The 8085 has NO prefetch queue — it uses a multiplexed address/data bus and each machine cycle is strictly sequential. The 8086 BIU has a 6-byte instruction queue (4 bytes on 8088, the 8-bit bus variant) that prefetches instructions in parallel with the EU executing. This is called the 'prefetch queue' or 'instruction queue.' The queue is filled whenever the bus is idle and the queue is not full. On a branch/jump, the queue is flushed and refilled from the new address. This queue is the basis of 8086's higher throughput compared to 8085 at the same clock speed."
+  },
+  {
+    q: "Explain the timing diagrams of 8085 — machine cycles and T-states.",
+    a: "Each 8085 instruction is divided into machine cycles (e.g., Opcode fetch = 4T, Memory read = 3T). Each machine cycle consists of T-states (clock periods). T-states are the basic timing units. For example, 'MVI A, data' = 2 machine cycles: Opcode fetch (4T) + Memory read (3T) = 7 T-states total. The 8085 uses a 3 MHz clock (typically). Machine cycles include: Opcode Fetch (4T or 6T), Memory Read (3T), Memory Write (3T), I/O Read (3T), I/O Write (3T), Interrupt Acknowledge (6T/12T depending on type). The number of T-states per instruction varies from 4 to 18."
+  },
+  {
+    q: "What is the function of the SID and SOD pins in 8085?",
+    a: "SID (Serial Input Data) is pin 5 — a 1-bit input line that allows serial data to be read into the A7 bit (MSB) of the accumulator using the RIM (Read Interrupt Mask) instruction. SOD (Serial Output Data) is pin 4 — a 1-bit output line that outputs the A7 bit (MSB) of the accumulator when the SIM (Set Interrupt Mask) instruction is executed. These pins allow the 8085 to communicate with slow serial devices without using the full bus. SID/SOD are used in applications requiring minimal hardware for serial communication."
+  },
+  {
+    q: "What is the difference between JC, JNC, JA, JB, JG, JL instructions in 8086?",
+    a: "JC/JNC check the Carry flag (CF=1/0) — used after unsigned arithmetic. JA (Jump Above) and JB (Jump Below) also check unsigned comparisons: JA = CF=0 AND ZF=0 (not below or equal), JB = CF=1 (below). JG (Jump Greater) and JL (Jump Less) check signed comparisons using OF, SF, ZF: JG = ZF=0 AND SF=OF (not less or equal), JL = SF≠OF (less). For example, comparing AL=05H and BL=03H (unsigned: 5>3, signed: 5>3): JC=0, JNC=1, JA=1, JB=0, JG=1, JL=0. The choice depends on whether you're treating numbers as signed (negative values possible) or unsigned."
+  },
+  {
+    q: "What is the role of the EU and BIU in 8086?",
+    a: "The 8086 has two independent units working in parallel: BIU (Bus Interface Unit) handles all bus activities — fetching instructions from memory, reading/writing data to registers and memory, and prefetching instructions into the queue. EU (Execution Unit) executes instructions from the queue — it contains the ALU, flag register, general-purpose registers, and control circuitry. The BIU calculates physical addresses using segment:offset arithmetic. They operate independently: while EU executes an instruction from the queue, BIU prefetches the next instruction. This overlap (pipelining) is why 8086 is faster than 8085 at the same clock speed. A jump instruction flushes the queue and causes a short delay while BIU refills it."
+  },
+  {
+    q: "Explain the ADC and SBB instructions and when to use them.",
+    a: "ADC (Add with Carry) adds source + CF to destination. Used for multi-word/integer arithmetic: when adding two 16-bit numbers where the lower byte addition generated a carry, ADC adds that carry into the upper byte. Example: adding 1234H + 5678H: ADD AL,34H → lower byte, then ADC AH,56H → upper byte + carry. SBB (Subtract with Borrow) subtracts source + CF from destination. Used for multi-word subtraction: SBB subtracts both the operand AND the borrow flag, so the borrow propagates correctly across multiple subtractions. SBB AH, 12H subtracts 12H + CF from AH. Both ADC and SBB are essential for multi-byte arithmetic operations."
+  },
+  {
+    q: "What are the addressing modes in 8086? Explain each with examples.",
+    a: "8086 has 7 addressing modes: Immediate (MOV AX, 05H), Register (MOV AX, BX), Direct (MOV AL, [3000H]), Register Indirect (MOV AL, [BX] or [SI] or [DI]), Based (MOV AL, [BX+05H]), Indexed (MOV AL, [SI+05H]), Based-Indexed (MOV AL, [BX+SI]). Note: [BP] defaults to SS segment, all others default to DS. You can override with segment registers: MOV AL, CS:[3000H]. The effective address (EA) is computed by the BIU and sent on the address bus. More complex addressing modes like [BX+SI+disp8] are encoded as [BX+SI]+disp8 in machine code."
+  },
+  {
+    q: "What is the difference between CALL and RET in 8086? How does the stack figure into this?",
+    a: "CALL pushes the address of the next instruction onto the stack (IP for near, CS:IP for far) and loads the subroutine address into IP. Near CALL: SP = SP - 2, [SP] = IP, IP = offset. Near RET pops that address back: IP = [SP], SP = SP + 2. For far procedures (PROC FAR), CALL pushes both CS and IP (4 bytes), RET pops both. The CALL/RET mechanism is essential for nested subroutines and recursive calls. The stack must be properly initialized (MOV AX, 0; MOV SS, AX; MOV SP, FFFFH or equivalent) before any CALL/RET. Mismatch between PUSH/POP or CALL/RET pairs causes stack corruption."
+  },
+  {
+    q: "What is the difference between SHR and SAR in 8086?",
+    a: "SHR (Shift Right Logical) shifts bits right, fills MSBs with zeros. For SAR (Shift Right Arithmetic), MSB is replicated (sign-extended) to preserve the sign of signed numbers. Example, AL = 10000011B (83H): SHR AL,1 → 01000001B (41H, CF=1). SAR AL,1 → 11000001B (C1H, CF=1). For unsigned division by 2, use SHR; for signed division by 2, use SAR. Both shift through CF. SAL/SHL are identical (shift left, fill LSBs with 0, CF gets the shifted-out MSB). SHL/SAL on 8086 are always logical (fill with 0)."
+  }
+];
+
+/* =========================================================
+   GUIDE DATA
+   ========================================================= */
+const GUIDE_DATA = `
+<h3>emu8086 — Exam Day Guide</h3>
+<ul>
+<li>Download from <a href="https://emu8086-microprocessor-emulator.en.softonic.com/" target="_blank">emu8086.com</a> — it's a Windows app, not browser-based</li>
+<li>The syntax matches exactly what modern8086.com and 8085emu.github.io use</li>
+<li>All codes in this app are written in emu8086-compatible syntax</li>
+<li>Assemble with: <code>ASM</code> button, Run with: <code>RUN</code> button</li>
+<li>To single-step: <code>Debug</code> → <code>Step</code> (F8) to see registers and flags change</li>
+<li>View memory: <code>View</code> → <code>Memory</code> — addresses are shown in hex</li>
+<li>Store values at memory: put numbers at the end of the data segment (ORG 0500H typically)</li>
+<li>Don't forget HLT at the end — otherwise the CPU runs into garbage and crashes</li>
+</ul>
+
+<h3>8085emu.github.io — Online 8085 Emulator</h3>
+<ul>
+<li>Uses the same 8085 assembly syntax as the lab exam</li>
+<li>All 8085 programs in this app have "Run on 8085emu" buttons</li>
+<li>Codes use 9000H-9050H memory area which is within the emulator's valid RAM range</li>
+<li>For programs using memory addresses (2500H, 3000H, etc.), you can simulate by manually setting memory values in the emulator's memory view</li>
+</ul>
+
+<h3>8085 Register Overview</h3>
+<ul>
+<li><code>A</code> — Accumulator (8-bit, primary register for arithmetic)</li>
+<li><code>B, C, D, E, H, L</code> — General-purpose registers (can be used in pairs as BC, DE, HL)</li>
+<li><code>HL</code> — Special register pair, default for memory indirect addressing (MOV A,M)</li>
+<li><code>SP</code> — Stack Pointer (16-bit)</li>
+<li><code>PC</code> — Program Counter (16-bit)</li>
+<li>Flags: <code>S</code> (Sign), <code>Z</code> (Zero), <code>AC</code> (Aux Carry), <code>P</code> (Parity), <code>CY</code> (Carry)</li>
+</ul>
+
+<h3>8086 Register Overview</h3>
+<ul>
+<li><code>AX</code> — Accumulator (16-bit, split to AH/AL), preferred for I/O and arithmetic</li>
+<li><code>BX</code> — Base register, can hold offsets,唯一 can be used for memory addressing without []</li>
+<li><code>CX</code> — Counter register, auto-decremented by LOOP and string instructions</li>
+<li><code>DX</code> — Data register, used in I/O port addressing and multi-byte multiplication (DX:AX result)</li>
+<li><code>SI</code> — Source Index, used in string operations as source address</li>
+<li><code>DI</code> — Destination Index, used in string operations as destination address</li>
+<li><code>BP</code> — Base Pointer, default segment is SS (stack), used for stack-relative addressing</li>
+<li><code>SP</code> — Stack Pointer, points to top of stack</li>
+<li><code>IP</code> — Instruction Pointer (offset of next instruction)</li>
+<li>Segment regs: <code>CS, DS, ES, SS</code></li>
+<li>Flag register (FLAGS): CF, PF, AF, ZF, SF, TF, IF, DF, OF, IOPL, NT, RF, VM</li>
+</ul>
+
+<h3>Common 8085 Instructions</h3>
+<ul>
+<li><code>MVI r,data</code> — Move immediate 8-bit</li>
+<li><code>LXI rp,data16</code> — Load immediate 16-bit register pair</li>
+<li><code>LDA addr</code> — Load A from direct address</li>
+<li><code>STA addr</code> — Store A to direct address</li>
+<li><code>MOV r1,r2</code> — Copy r2 to r1</li>
+<li><code>ADD r/M</code> — Add to A</li>
+<li><code>SUB r/M</code> — Subtract from A</li>
+<li><code>INR r/M</code> — Increment</li>
+<li><code>DCR r/M</code> — Decrement</li>
+<li><code>CMP r/M</code> — Compare with A (sets flags, doesn't change A)</li>
+<li><code>JMP addr</code> — Unconditional jump</li>
+<li><code>JC/JNC addr</code> — Jump if carry / no carry</li>
+<li><code>JZ/JNZ addr</code> — Jump if zero / not zero</li>
+<li><code>HLT</code> — Halt CPU</li>
+<li><code>NOP</code> — No operation</li>
+<li><code>DAD rp</code> — Add register pair to HL</li>
+<li><code>INX / DCX rp</code> — Increment/Decrement register pair</li>
+<li><code>PUSH rp</code> — Push register pair on stack</li>
+<li><code>POP rp</code> — Pop stack into register pair</li>
+</ul>
+
+<h3>Common 8086 Instructions</h3>
+<ul>
+<li><code>MOV dest,src</code> — Move/copy</li>
+<li><code>ADD/SUB dest,src</code> — Add/subtract</li>
+<li><code>INC/DEC dest</code> — Increment/decrement by 1</li>
+<li><code>MUL/IMUL src</code> — Unsigned/signed multiply (AL×8bit→AX, AX×16bit→DX:AX)</li>
+<li><code>DIV/IDIV src</code> — Unsigned/signed divide (AX÷8bit→AL:AH, DX:AX÷16bit→AX:DX)</li>
+<li><code>CMP dest,src</code> — Compare (sets flags, doesn't change dest)</li>
+<li><code>JMP/CALL/RET</code> — Control flow</li>
+<li><code>JC/JNC/JZ/JNZ/JE</code> — Conditional jumps (carry/zero)</li>
+<li><code>JA/JB/JG/JL</code> — Conditional jumps (above/below/greater/less)</li>
+<li><code>LOOP label</code> — Decrement CX, jump if CX≠0</li>
+<li><code>REP/REPZ/REPNZ</code> — String operation repeat prefix</li>
+<li><code>MOVSB/MOVSW</code> — Move string byte/word</li>
+<li><code>LODS/STOS</code> — Load/store string</li>
+<li><code>CLC/STC/CLI/STI</code> — Flag and interrupt control</li>
+<li><code>ADC/SBB</code> — Add/subtract with carry/borrow (for multi-word arithmetic)</li>
+<li><code>XCHG r1,r2</code> — Exchange values</li>
+<li><code>LEA reg,mem</code> — Load Effective Address (offset of memory operand into register)</li>
+<li><code>PUSH/POP reg</code> — Stack operations</li>
+</ul>
+
+<h3>Exam Day Checklist</h3>
+<ul>
+<li>Start with the ones you know — build confidence first</li>
+<li>Always initialize registers before using them (especially AX, CX)</li>
+<li>For 8086: always initialize DS before accessing memory (MOV AX,0; MOV DS,AX)</li>
+<li>For loops: make sure your counter is correct (10 numbers = CX=9 remaining after first load, or CX=10 with post-decrement)</li>
+<li>HLT must be the last instruction — the CPU will run into garbage without it</li>
+<li>Watch out for carry: add-with-carry (ADC) for 16-bit, and track carry separately in 8085</li>
+<li>For division: always check that divisor is not zero</li>
+<li>Memory addresses must be within valid RAM range for the emulator</li>
+<li>Comments don't affect execution — keep them short if at all</li>
+</ul>
+
+<h3>Quick Reference — 8085 Flag Behavior</h3>
+<ul>
+<li><code>ADD/SUB</code>: S, Z, AC, P, CY all affected</li>
+<li><code>INR/DCR</code>: S, Z, AC, P affected; CY NOT affected</li>
+<li><code>CMP</code>: S, Z, AC, P, CY all affected (A - operand)</li>
+<li><code>ANA/ORA/XRA</code>: S, Z, P affected; C=0, AC=0</li>
+<li><code>DAD</code>: Only CY affected (set if carry from bit 15)</li>
+<li><code>HLT</code>: No flags affected</li>
+<li><code>STC</code>: CY=1; <code>CMC</code>: CY=NOT CY; <code>CLC</code>: CY=0</li>
+</ul>
+
+<h3>Quick Reference — 8086 Flag Behavior</h3>
+<ul>
+<li><code>ADD/SUB/CMP</code>: OF, SF, ZF, AF, PF, CF all affected</li>
+<li><code>INC/DEC</code>: OF, SF, ZF, AF, PF affected; CF NOT changed</li>
+<li><code>MUL</code>: CF=OF=0 if upper half is zero, else 1</li>
+<li><code>DIV</code>: No flags affected</li>
+<li><code>AND/OR/XOR</code>: CF=0, OF=0; S, Z, P affected; AF undefined</li>
+<li><code>SHL/SHR</code>: CF = last shifted-out bit; OF = (for 1-bit shifts) original MSB</li>
+<li><code>SAR</code>: CF = last shifted-out bit; OF = 0</li>
+<li><code>LOOP/JCXZ</code>: No flags affected</li>
+</ul>
+`;
+
+/* =========================================================
    UI LOGIC
    ========================================================= */
 
@@ -1012,10 +1223,40 @@ function buildViva() {
       <div class="a">${esc(item.a)}</div>
     </div>`;
   });
+  html += `<div style="margin-top:20px;text-align:center;">
+    <button id="toggle-adv" style="background:none;border:1px solid #ccc;padding:8px 20px;border-radius:20px;font-size:12px;cursor:pointer;color:#888;" onclick="toggleAdvanced()">Show Advanced (+${ADVANCED_VIVA.length})</button>
+  </div>
+  <div id="adv-section" style="display:none;margin-top:16px;"></div>`;
+
   document.getElementById('viva-content').innerHTML = html;
 }
 
-// Tabs
+function toggleAdvanced() {
+  const section = document.getElementById('adv-section');
+  const btn = document.getElementById('toggle-adv');
+  if (section.style.display === 'none') {
+    let html = '';
+    ADVANCED_VIVA.forEach(item => {
+      html += `<div class="viva-card">
+        <div class="q">${esc(item.q)}</div>
+        <div class="a">${esc(item.a)}</div>
+      </div>`;
+    });
+    section.innerHTML = html;
+    section.style.display = 'block';
+    btn.textContent = 'Hide Advanced';
+    btn.style.color = '#666';
+  } else {
+    section.style.display = 'none';
+    section.innerHTML = '';
+    btn.textContent = 'Show Advanced (+' + ADVANCED_VIVA.length + ')';
+    btn.style.color = '#888';
+  }
+}
+
+// Init
+buildViva();
+document.getElementById('guide-content').innerHTML = GUIDE_DATA;
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
