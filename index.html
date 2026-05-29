@@ -15,11 +15,55 @@ body {
   font-size: 14px;
 }
 
+/* === PASSWORD OVERLAY === */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s;
+}
+#overlay.hidden { opacity: 0; pointer-events: none; }
+#overlay input {
+  padding: 14px 20px;
+  font-size: 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  width: min(300px, 85vw);
+  min-height: 50px;
+  text-align: center;
+  font-family: inherit;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  -webkit-appearance: none;
+  -webkit-text-security: none;
+  touch-action: manipulation;
+}
+#overlay input:focus { border-color: #999; }
+#overlay input.shake {
+  animation: shake 0.4s;
+  border-color: #e53935;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
+}
+
 #app {
   max-width: 900px;
   margin: 0 auto;
   padding: 16px;
+  display: none;
 }
+#app.visible { display: block; }
 
 header {
   background: #1a1a2e;
@@ -295,6 +339,12 @@ header p { font-size: 12px; color: #888; margin-top: 4px; }
     <div id="viva-content"></div>
   </div>
 
+</div>
+</div>
+
+<!-- Password Overlay -->
+<div id="overlay">
+  <input type="password" id="pw" autocomplete="off" enterkeyhint="go" inputmode="text" autocapitalize="none" autocorrect="off" spellcheck="false">
 </div>
 
 <script>
@@ -984,7 +1034,29 @@ document.getElementById('sel-8086').addEventListener('change', e => {
   if (e.target.value) build86(e.target.value);
 });
 
-// Init viva
+// Password
+const overlay = document.getElementById('overlay');
+const pwInput = document.getElementById('pw');
+const app = document.getElementById('app');
+
+function unlock() {
+  overlay.classList.add('hidden');
+  app.classList.add('visible');
+}
+
+pwInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (pwInput.value.toLowerCase() === 'uba') {
+      unlock();
+    } else {
+      pwInput.classList.add('shake');
+      setTimeout(() => pwInput.classList.remove('shake'), 400);
+      pwInput.value = '';
+    }
+  }
+});
+
+// Init
 buildViva();
 </script>
 </body>
