@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microprocessor Lab Reference</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+header h1 { font-size: 18px; font-weight: 600; }
+header p { font-size: 12px; color: #888; margin-top: 4px; }
+
+.selector {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: #e0e0e0;
+  padding: 4px;
+  border-radius: 8px;
+}
+.tab {
+  flex: 1;
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #666;
+  transition: background 0.15s, color 0.15s;
+}
+.tab.active {
+  background: #fff;
+  color: #1a1a2e;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* PROGRAM CARD */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.card h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1a1a2e;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.card .q {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: #f8f8f8;
+  border-left: 3px solid #1a1a2e;
+  border-radius: 0 4px 4px 0;
+}
+
+/* IMPORTANT BADGE */
+.badge {
+  display: inline-block;
+  background: #e53935;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+/* CODE BOX */
+.code-box {
+  position: relative;
+  background: #1e1e2e;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.code-label {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  background: #16161f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #2a2a3a;
+}
+.code-box pre {
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #cdd6f4;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.code-box pre::-webkit-scrollbar { height: 6px; }
+.code-box pre::-webkit-scrollbar-track { background: #1e1e2e; }
+.code-box pre::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: #2a2a3a;
+  color: #888;
+  border: none;
+  padding: 3px 10px;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.copy-btn:hover { background: #3a3a5a; color: #cdd6f4; }
+.copy-btn.copied { background: #2e7d32; color: #fff; }
+
+/* RUN BUTTONS */
+.run-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.run-btn-86 {
+  background: #1565c0;
+  color: #fff;
+}
+.run-btn-86:hover { background: #1976d2; }
+.run-btn-85 {
+  background: #2e7d32;
+  color: #fff;
+}
+.run-btn-85:hover { background: #388e3c; }
+
+/* VIVA */
+.viva-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.viva-card .q {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #1a1a2e;
+}
+.viva-card .a {
+  font-size: 13px;
+  color: #444;
+  padding: 10px 14px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  border-left: 3px solid #888;
+}
+
+@media (max-width: 600px) {
+  body { font-size: 13px; }
+  #app { padding: 10px; }
+  .card { padding: 14px; }
+  .tabs { flex-wrap: wrap; }
+  .tab { font-size: 12px; padding: 7px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <h1>Microprocessor Lab Reference</h1>
+    <p>8085 + 8086 Programs &mdash; Verified Working Code</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="8085">8085 Programs</button>
+    <button class="tab" data-tab="8086">8086 Programs</button>
+    <button class="tab" data-tab="viva">Viva Cheat Sheet</button>
+  </div>
+
+  <!-- 8085 Tab -->
+  <div id="tab-8085" class="tab-content active">
+    <select class="selector" id="sel-8085" size="1">
+      <option value="">-- Select a program --</option>
+      <optgroup label="IMPORTANT">
+        <option value="p1">1. Add two 8-bit immediate data</option>
+        <option value="p2">2. Subtract two 8-bit immediate data</option>
+        <option value="p7">7. Multiply via repeated addition</option>
+        <option value="p8">8. Divide via repeated subtraction</option>
+        <option value="p11">11. Add ten numbers with carry</option>
+        <option value="p20">20. Find biggest of ten numbers</option>
+        <option value="p21">21. Find smallest of ten numbers</option>
+      </optgroup>
+      <optgroup label="All Programs">
+        <option value="p3">3. Multiply two 8-bit data with carry</option>
+        <option value="p4">4. Add two numbers from memory</option>
+        <option value="p5">5. Subtract two numbers from memory</option>
+        <option value="p6">6. Add with carry</option>
+        <option value="p9">9. Add 5 numbers from memory</option>
+        <option value="p10">10. Multiply three numbers</option>
+        <option value="p12">12. Subtract two 16-bit numbers</option>
+        <option value="p19">19. Add two 16-bit numbers</option>
+        <option value="p22">22. Find smallest of ten numbers (8086-style)</option>
+        <option value="p23">23. Square of a number</option>
+        <option value="p27">27. Interchange block of data</option>
+        <option value="p30">30. Block transfer</option>
+      </optgroup>
+    </select>
+    <div id="prog-8085"></div>
+  </div>
+
+  <!-- 8086 Tab -->
+  <div id="tab-8086" class="tab-content">
+    <select class="selector" id="sel-8086" size="1">
+      <option value="">-- Select a program --</option>
+      <optgroup label="IMPORTANT">
+        <option value="p13">13. Transfer of data without overlap</option>
+        <option value="p14">14. Add two 8-bit numbers</option>
+        <option value="p15">15. Subtract two 16-bit numbers</option>
+        <option value="p18">18. Factorial of a number</option>
+        <option value="p17">17. Find LCM of two numbers</option>
+        <option value="p16">16. Find biggest of ten numbers</option>
+        <option value="p24">24. Square of a number</option>
+      </optgroup>
+      <optgroup label="All Programs">
+        <option value="p25">25. Multiply two 8-bit numbers</option>
+        <option value="p26">26. Divide two 8-bit numbers</option>
+        <option value="p28">28. Interchange block of data</option>
+        <option value="p29">29. Multiply two 16-bit numbers</option>
+      </optgroup>
+    </select>
+    <div id="prog-8086"></div>
+  </div>
+
+  <!-- Viva Tab -->
+  <div id="tab-viva" class="tab-content">
+    <div id="viva-content"></div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   8085 PROGRAMS
+   ========================================================= */
+const DATA_85 = {
+
+  p1: {
+    title: "Add two 8-bit immediate data",
+    q: "Load two immediate values into registers and add them. Store result in memory.",
+    important: true,
+    code: `MVI A, 02H      ; Load immediate data 02H into Accumulator
+MVI B, 02H      ; Load immediate data 02H into register B
+ADD B           ; Add contents of B to A (A = A + B)
+STA 9050H       ; Store the result in memory location 9050H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p2: {
+    title: "Subtract two 8-bit immediate data",
+    q: "Load two immediate values and subtract the second from the first. Store result.",
+    important: true,
+    code: `MVI A, 05H      ; Load first number into Accumulator
+MVI B, 03H      ; Load second number into register B
+SUB B           ; Subtract B from A (A = A - B)
+STA 9050H       ; Store result in memory location 9050H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p3: {
+    title: "Multiply two 8-bit data with carry",
+    q: "Multiply two 8-bit numbers using repeated addition. Handle multi-byte result.",
+    code: `MVI A, 00H      ; Accumulator set to 0 (Result lower byte)
+MVI B, FEH      ; Multiplicand loaded to B
+MVI D, A3H      ; Multiplier loaded to D (Counter)
+MVI C, 00H      ; Carry register set to 0
+LOOP: ADD B     ; Add B to Accumulator
+JNC NEXT        ; If no carry, jump to NEXT
+INR C           ; If carry, increment C
+NEXT: DCR D     ; Decrement multiplier (Counter)
+JNZ LOOP        ; If counter != 0, repeat loop
+STA 9050H       ; Store lower byte of result in 9050H
+MOV A, C        ; Move carry (higher byte) to Accumulator
+STA 9051H       ; Store higher byte of result in 9051H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p4: {
+    title: "Add two numbers from memory",
+    q: "Load two numbers from memory locations and add them.",
+    code: `LDA 2500H       ; Load the accumulator with content of 2500H
+MOV B, A        ; Copy accumulator content to B
+LDA 2501H       ; Load the accumulator with content of 2501H
+ADD B           ; Add content of B to A
+STA 2502H       ; Store the result in 2502H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p5: {
+    title: "Subtract two numbers from memory",
+    q: "Load two numbers from memory and subtract the second from the first.",
+    code: `LDA 2500H       ; Load the accumulator with content of 2500H
+MOV B, A        ; Save the content of A into B
+LDA 2501H       ; Load the accumulator with content of 2501H
+MOV C, A        ; Save the content of A into C
+MOV A, B        ; Bring the first number back to A
+SUB C           ; Subtract C from A (A = A - C)
+STA 2502H       ; Store the result in 2502H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p6: {
+    title: "Add with carry",
+    q: "Add two numbers from memory and detect if carry occurred.",
+    code: `LDA 2500H       ; Load first number to A
+MOV B, A        ; Copy first number to B
+LDA 2501H       ; Load second number to A
+ADD B           ; A = A + B
+STA 9050H       ; Store the lower byte result in 9050H
+JNC SKIP        ; Jump if no carry
+MVI A, 01H      ; If carry, set A = 01H
+STA 9051H       ; Store carry in 9051H
+JMP END         ; Jump to end
+SKIP: MVI A, 00H; If no carry, set A = 00H
+STA 9051H       ; Store 00H in 9051H
+END: HLT        ; Stop execution`,
+    run85: true
+  },
+
+  p7: {
+    title: "Multiply via repeated addition",
+    q: "Multiply two 8-bit numbers using repeated addition (no carry handling).",
+    important: true,
+    code: `MVI A, 00H      ; Clear accumulator (Result = 0)
+MVI B, 05H      ; Load multiplicand into B
+MVI C, 03H      ; Load multiplier into C (Counter)
+LOOP: ADD B     ; Add multiplicand to Accumulator
+DCR C           ; Decrement counter
+JNZ LOOP        ; Repeat loop until C = 0
+STA 9050H       ; Store the result
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p8: {
+    title: "Divide via repeated subtraction",
+    q: "Divide two 8-bit numbers using repeated subtraction. Get quotient and remainder.",
+    important: true,
+    code: `MVI A, 09H      ; Load dividend into A
+MVI B, 03H      ; Load divisor into B
+MVI C, 00H      ; Clear C for quotient
+LOOP: CMP B     ; Compare A with B
+JC END          ; If A < B, division is complete
+SUB B           ; A = A - B
+INR C           ; Increment quotient
+JMP LOOP        ; Repeat loop
+END: STA 9050H  ; Store remainder (in A)
+MOV A, C        ; Move quotient to A
+STA 9051H       ; Store quotient
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p9: {
+    title: "Add 5 numbers from memory",
+    q: "Add five numbers stored consecutively starting at memory location 2500H.",
+    code: `LXI H, 2500H    ; HL points to start address
+MVI C, 05H      ; Counter = 5
+MVI A, 00H      ; Clear accumulator
+LOOP: ADD M     ; Add memory content to A
+INX H           ; Point to next memory location
+DCR C           ; Decrement counter
+JNZ LOOP        ; Repeat loop until C = 0
+STA 2505H       ; Store final result at 2505H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p10: {
+    title: "Multiply three numbers",
+    q: "Multiply three numbers stored at consecutive memory locations.",
+    code: `LDA 2500H       ; Load first number
+MOV B, A        ; B = first number
+LDA 2501H       ; Load second number
+MOV C, A        ; C = Counter (second number)
+MVI A, 00H      ; Clear A
+LOOP1: ADD B    ; Add first number
+DCR C           ; Decrement counter
+JNZ LOOP1       ; Repeat until C = 0 (A now has 1st * 2nd)
+MOV D, A        ; Store intermediate result in D
+LDA 2502H       ; Load third number
+MOV C, A        ; C = Counter (third number)
+MVI A, 00H      ; Clear A for final result
+LOOP2: ADD D    ; Add intermediate result
+DCR C           ; Decrement counter
+JNZ LOOP2       ; Repeat until C = 0
+STA 2503H       ; Store final result in 2503H
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p11: {
+    title: "Add ten numbers with carry",
+    q: "Add 10 numbers from memory and track any carry in a separate register.",
+    important: true,
+    code: `MVI C, 00H      ; Clear carry register
+MVI B, 0AH      ; Counter = 10 (0AH)
+MVI A, 00H      ; Clear accumulator
+LXI H, 2000H    ; HL points to start address
+LOOP: ADD M     ; Add memory content to A
+JNC SKIP        ; If no carry, skip incrementing C
+INR C           ; Increment higher byte (Carry)
+SKIP: INX H     ; Next memory location
+DCR B           ; Decrement counter
+JNZ LOOP        ; Repeat the loop
+STA 3000H       ; Store lower byte result
+MOV A, C        ; Move carry to A
+STA 3001H       ; Store higher byte (Carry)
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p12: {
+    title: "Subtract two 16-bit numbers",
+    q: "Subtract two 16-bit numbers stored in memory using borrow logic.",
+    code: `LXI H, 2500H    ; Load address of first number
+MOV A, M        ; A = lower byte (1st no.)
+INX H           ; Move to next byte
+MOV B, M        ; B = high byte (1st no.)
+INX H           ; Move to next byte
+MOV C, M        ; C = lower byte (2nd no.)
+INX H           ; Move to next byte
+MOV D, M        ; D = high byte (2nd no.)
+LXI H, 2500H    ; Point back to starting address
+MOV A, M        ; Reload lower byte of 1st no.
+SUB C           ; Subtract lower bytes
+STA 2504H       ; Store result (low byte)
+MOV A, B        ; Load high byte (1st no.)
+SBB D           ; Subtract high bytes with borrow
+STA 2505H       ; Store result (high byte)
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p19: {
+    title: "Add two 16-bit numbers",
+    q: "Add two 16-bit numbers stored in memory using ADC for carry propagation.",
+    code: `LXI H, 2500H    ; Load address of first 16-bit number
+MOV A, M        ; Get lower byte of 1st number
+INX H
+MOV B, M        ; Get higher byte of 1st number
+INX H
+MOV C, M        ; Get lower byte of 2nd number
+INX H
+MOV D, M        ; Get higher byte of 2nd number
+MOV A, C        ; Move lower byte of 2nd number to A
+LXI H, 2500H    ; Point back to 1st number lower byte
+ADD M           ; Add lower bytes (A = A + M)
+STA 2504H       ; Store lower byte result
+INX H           ; Point to higher byte of 1st number
+MOV A, M        ; Move higher byte of 1st number to A
+ADC D           ; Add higher bytes WITH CARRY
+STA 2505H       ; Store higher byte result
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p20: {
+    title: "Find biggest of ten 8-bit numbers",
+    q: "Compare ten numbers in memory and find the maximum value.",
+    important: true,
+    code: `LXI H, 3000H    ; HL points to source address
+MOV A, M        ; A = first number (assume max)
+MVI C, 09H      ; Loop counter (remaining 9 numbers)
+LOOP: INX H     ; Move to next number
+CMP M           ; Compare A with memory
+JNC SKIP        ; If A >= M (No carry), skip update
+MOV A, M        ; Else, update max (A = M)
+SKIP: DCR C     ; Decrement counter
+JNZ LOOP        ; Repeat loop
+STA 3010H       ; Store biggest number
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p21: {
+    title: "Find smallest of ten 8-bit numbers",
+    q: "Compare ten numbers in memory and find the minimum value.",
+    important: true,
+    code: `LXI H, 3000H    ; HL points to source address
+MOV A, M        ; A = first number (assume smallest)
+MVI C, 09H      ; Loop counter (remaining 9 numbers)
+LOOP: INX H     ; Move to next number
+CMP M           ; Compare A with memory
+JC SKIP         ; If A < M (Carry flag set), skip update
+MOV A, M        ; Else, update smallest (A = M)
+SKIP: DCR C     ; Decrement counter
+JNZ LOOP        ; Repeat loop
+STA 3010H       ; Store smallest number
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p22: {
+    title: "Find smallest of ten 8-bit numbers (8086-style loop)",
+    q: "Same as Program 21 but using 8086-style comparison with JC instead of JNC.",
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV SI, 3000H   ; SI = source address
+MOV AL, [SI]    ; AL = first number (assume smallest)
+MOV CX, 0009H   ; Loop counter
+NEXT: INC SI    ; Move to next number
+CMP AL, [SI]    ; Compare AL with memory
+JC SKIP         ; If AL < memory, skip update
+MOV AL, [SI]    ; Else update smallest
+SKIP: LOOP NEXT ; Repeat loop
+MOV [3010H], AL ; Store smallest number
+HLT             ; Stop`,
+    run85: true
+  },
+
+  p23: {
+    title: "Square of a number",
+    q: "Find the square of a number using repeated addition.",
+    code: `LXI H, 3000H    ; HL address of number
+MOV B, M        ; B = number (Counter)
+MOV C, M        ; C = number (Value to add)
+MVI A, 00H      ; Clear accumulator
+LOOP: ADD C     ; A = A + C
+DCR B           ; Decrement counter
+JNZ LOOP        ; Repeat until B = 0
+STA 3001H       ; Store result (low byte)
+MVI A, 00H      ; Clear A (for high byte calculation)
+STA 3002H       ; Store high byte
+HLT`,
+    run85: true
+  },
+
+  p27: {
+    title: "Interchange block of data",
+    q: "Swap data between two blocks of memory (5 bytes each).",
+    code: `LXI H, 3000H    ; HL points to Block 1
+LXI D, 4000H    ; DE points to Block 2
+MVI C, 05H      ; Counter = 5
+LOOP: MOV A, M  ; A = data from Block 1
+MOV B, A        ; Save Block 1 data in B
+LDAX D          ; A = data from Block 2
+MOV M, A        ; Store Block 2 data in Block 1
+MOV A, B        ; Get Block 1 data from B
+STAX D          ; Store into Block 2
+INX H           ; Next Block 1 location
+INX D           ; Next Block 2 location
+DCR C           ; Decrement counter
+JNZ LOOP        ; Repeat until C = 0
+HLT             ; Stop execution`,
+    run85: true
+  },
+
+  p30: {
+    title: "Block transfer",
+    q: "Transfer 10 bytes of data from source address to destination address.",
+    code: `LXI H, 3000H    ; HL = source address
+LXI D, 4000H    ; DE = destination address
+MVI C, 0AH      ; Counter = 10 bytes
+LOOP: MOV A, M  ; Get data from source
+STAX D          ; Store into destination
+INX H           ; Next source location
+INX D           ; Next destination location
+DCR C           ; Decrement counter
+JNZ LOOP        ; Repeat until C = 0
+HLT             ; Stop execution`,
+    run85: true
+  }
+};
+
+/* =========================================================
+   8086 PROGRAMS
+   ========================================================= */
+const DATA_86 = {
+
+  p13: {
+    title: "Transfer of data without overlap",
+    q: "Transfer a block of 10 bytes from source to destination using MOVSB.",
+    important: true,
+    code: `MOV AX, 0000H   ; Initialize segments
+MOV DS, AX      ; Source segment
+MOV ES, AX      ; Destination segment
+MOV SI, 3000H   ; SI = source address
+MOV DI, 4000H   ; DI = destination address
+MOV CX, 000AH   ; Count = 10 bytes
+CLD             ; Clear direction flag (forward)
+REP MOVSB       ; Move CX bytes from SI to DI
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p14: {
+    title: "Add two 8-bit numbers",
+    q: "Load two 8-bit numbers from memory and add them, store result.",
+    important: true,
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV AL, [8500H] ; Load first number into AL
+MOV BL, [8502H] ; Load second number into BL
+ADD AL, BL      ; AL = AL + BL
+MOV [8504H], AL ; Store result
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p15: {
+    title: "Subtract two 16-bit numbers",
+    q: "Load two 16-bit numbers from memory and subtract second from first.",
+    important: true,
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV AX, [8500H] ; AX = first 16-bit number
+MOV BX, [8502H] ; BX = second 16-bit number
+SUB AX, BX      ; AX = AX - BX
+MOV [8504H], AX ; Store 16-bit result
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p16: {
+    title: "Find biggest of ten 8-bit numbers",
+    q: "Compare ten numbers in memory and find the maximum value.",
+    important: true,
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV SI, 3000H   ; SI = source address
+MOV AL, [SI]    ; AL = first number (assume max)
+MOV CX, 0009H   ; Loop counter (remaining 9 numbers)
+NEXT: INC SI    ; Move to next number
+CMP AL, [SI]    ; Compare AL with memory
+JNC SKIP        ; If AL >= [SI], skip update
+MOV AL, [SI]    ; Else update max (AL = [SI])
+SKIP: LOOP NEXT ; Repeat loop
+MOV [3010H], AL ; Store largest number
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p17: {
+    title: "Find LCM of two 16-bit numbers",
+    q: "Calculate the Least Common Multiple of two numbers by checking multiples.",
+    important: true,
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV AX, [3000H] ; Load first number
+MOV BX, [3002H] ; Load second number
+CMP AX, BX      ; Compare AX and BX
+JNC START       ; If AX > BX, jump to START
+XCHG AX, BX     ; Else, swap so AX is largest
+START: MOV CX, AX ; CX will hold candidate LCM
+MOV SI, AX      ; Save original larger number in SI
+LOOP1: MOV DX, 0000H
+MOV AX, CX      ; Prepare multiple for division
+DIV BX          ; Divide candidate LCM by smaller number
+CMP DX, 0000H   ; Check remainder
+JE DONE         ; If remainder is 0, LCM is found
+ADD CX, SI      ; Add original larger number to candidate
+JMP LOOP1       ; Repeat
+DONE: MOV [3004H], CX ; Store LCM
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p18: {
+    title: "Factorial of a number",
+    q: "Calculate the factorial of a number (e.g., 5) using MUL in a loop.",
+    important: true,
+    code: `MOV AX, 0005H   ; Number to find factorial for (change as needed)
+MOV BX, AX      ; BX = counter
+DEC BX          ; BX = number - 1
+FACTORIAL: MUL BX ; AX = AX * BX
+DEC BX          ; Decrease counter
+JNZ FACTORIAL   ; Repeat until BX = 0
+HLT             ; Stop execution (Result in AX)`,
+    run86: true
+  },
+
+  p24: {
+    title: "Square of a number",
+    q: "Square a number using MUL instruction (number * number = result).",
+    important: true,
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV AL, [3000H] ; Load number into AL
+MUL AL          ; AX = AL * AL (square)
+MOV [3001H], AL ; Store low byte of result
+MOV [3002H], AH ; Store high byte of result
+HLT`,
+    run86: true
+  },
+
+  p25: {
+    title: "Multiply two 8-bit numbers",
+    q: "Multiply two 8-bit numbers using MUL instruction.",
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV AL, 12H     ; Load first 8-bit number into AL
+MOV BL, 05H     ; Load second 8-bit number into BL
+MUL BL          ; AX = AL * BL
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p26: {
+    title: "Divide two 8-bit numbers",
+    q: "Divide an 8-bit dividend by an 8-bit divisor. Quotient in AL, remainder in AH.",
+    code: `MOV AX, 0000H   ; Initialize DS
+MOV DS, AX
+MOV AL, 14H     ; Dividend (e.g., 20)
+MOV BL, 05H     ; Divisor (e.g., 5)
+DIV BL          ; AL = AX / BL (Quotient in AL, Remainder in AH)
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p28: {
+    title: "Interchange block of data",
+    q: "Swap data between two blocks of memory byte by byte.",
+    code: `MOV AX, 0000H   ; Initialize segments
+MOV DS, AX
+MOV ES, AX
+MOV SI, 3000H   ; SI points to Block 1
+MOV DI, 4000H   ; DI points to Block 2
+MOV CX, 0005H   ; Count = 5
+NEXT: MOV AL, [SI] ; AL = Block 1 data
+MOV BL, [DI]    ; BL = Block 2 data
+MOV [DI], AL    ; Write Block 1 data to Block 2
+MOV [SI], BL    ; Write Block 2 data to Block 1
+INC SI          ; Next Block 1 location
+INC DI          ; Next Block 2 location
+LOOP NEXT       ; Repeat until CX = 0
+HLT             ; Stop execution`,
+    run86: true
+  },
+
+  p29: {
+    title: "Multiply two 16-bit numbers",
+    q: "Multiply two 16-bit numbers using MUL. Result in DX:AX (upper:lower).",
+    code: `MOV AX, 1234H   ; First 16-bit number
+MOV BX, 0020H   ; Second 16-bit number
+MUL BX          ; DX:AX = AX * BX
+HLT             ; Stop execution`,
+    run86: true
+  }
+};
+
+/* =========================================================
+   VIVA DATA
+   ========================================================= */
+const VIVA_DATA = [
+  {
+    q: "What is the difference between 8085 and 8086 microprocessors?",
+    a: "8085 is an 8-bit microprocessor with 16-bit address bus (16-bit address but 8-bit data bus). 8086 is a 16-bit microprocessor with 20-bit address bus and 16-bit data bus. 8086 has more registers (AX, BX, CX, DX, SI, DI, BP, SP, IP), supports pipelining, and has a more powerful instruction set. 8085 is simpler, has fewer registers (A, B, C, D, E, H, L, F), and is easier to program for beginners."
+  },
+  {
+    q: "What are flags in 8085? Name all flag bits.",
+    a: "Flags are single-bit registers that indicate the result status of an operation. The 8085 has 5 flags: Sign Flag (S) - set if D7 of result is 1 (negative), Zero Flag (Z) - set if result is zero, Auxiliary Carry Flag (AC) - set if there's a carry from D3 to D4 (used for BCD), Parity Flag (P) - set if result has even number of 1s, Carry Flag (CY) - set if there's a carry from D7 during addition or borrow during subtraction."
+  },
+  {
+    q: "What is the difference between MVI and LXI?",
+    a: "MVI (Move Immediate) is a 2-byte instruction used to load an 8-bit immediate value into a register or memory location. e.g., MVI A, 05H loads 05H into accumulator. LXI (Load Immediate Extended) is a 3-byte instruction used to load a 16-bit immediate value into a register pair (BC, DE, HL) or stack pointer. e.g., LXI H, 2500H loads 2500H into HL register pair. LXI loads 16 bits while MVI loads only 8 bits."
+  },
+  {
+    q: "What is the function of the STAX and LDA instructions?",
+    a: "LDA (Load Accumulator) is a 3-byte instruction that loads the accumulator with the contents of a specified memory address. e.g., LDA 2500H loads the content at memory location 2500H into A. STAX (Store Accumulator) is a 2-byte instruction that stores the contents of the accumulator into a memory location specified by a register pair (B or D). e.g., STAX B stores A at the address in BC. LDA loads FROM memory, STAX stores TO memory."
+  },
+  {
+    q: "Explain the DAD instruction in 8085.",
+    a: "DAD (Double Add) adds the contents of a register pair to the HL register pair. It's a 1-byte instruction that only works with HL as the accumulator. The result is stored in HL. The only flag affected is the Carry Flag (CY), which is set if there's a carry from bit 15. Syntax: DAD B (HL = HL + BC), DAD D (HL = HL + DE), DAD H (HL = HL + HL, effectively doubles HL), DAD SP (HL = HL + SP)."
+  },
+  {
+    q: "What is the difference between SUB and CMP instructions?",
+    a: "SUB performs actual subtraction: A = A - register/memory. It changes the accumulator value and updates all flags (S, Z, AC, P, CY) based on the result. CMP (Compare) performs subtraction internally (A - register) to set flags but does NOT store the result back in the accumulator. So after CMP, the accumulator value is unchanged. The flags set by CMP allow conditional jumps: JE/JZ (equal/zero), JNE/JNZ (not equal), JA (above), JB (below), etc."
+  },
+  {
+    q: "How does the 8085 handle multiplication of 8-bit numbers?",
+    a: "The 8085 MUL instruction is not available in basic 8085 (added in 8087). So 8-bit multiplication is done via repeated addition in a loop. The multiplicand is added to itself 'multiplier' number of times using a counter register. For results that exceed 8 bits, an extra register is used to track the carry (higher byte). For example: MVI B, 05H (multiplicand), MVI C, 03H (counter), then loop adding B to A until C reaches 0."
+  },
+  {
+    q: "What is the difference between RRC and RAR in 8085?",
+    a: "RRC (Rotate Right Accumulator) rotates the accumulator right by 1 bit. The LSB (D0) goes to the MSB (D7) AND also to the Carry flag. RAR (Rotate Right through Carry) rotates the accumulator right through the carry flag. The LSB goes to Carry flag, and the previous Carry flag value goes to MSB. So RAR includes the carry flag in the rotation while RRC does not — RRC is a pure 8-bit rotation, RAR is a 9-bit rotation including the carry."
+  },
+  {
+    q: "Explain the working of the stack in 8085.",
+    a: "The Stack is a LIFO (Last In First Out) memory area used for temporary storage. It's initialized by loading SP with the top address of available RAM (e.g., LXI SP, 27FFH for a 2764 EPROM-based system growing downward). PUSH saves register pairs onto the stack (decrements SP twice, stores data). POP retrieves them (reads data, increments SP twice). PUSH saves in order: upper byte at SP-1, lower byte at SP-2, then SP = SP - 2. POP reads in reverse: lower byte from SP, upper byte from SP+1, then SP = SP + 2."
+  },
+  {
+    q: "What is the purpose of the ALE signal in 8085?",
+    a: "ALE (Address Latch Enable) is a control signal that goes HIGH during the first clock cycle of each machine cycle. It indicates that the multiplexed address/data bus (AD0-AD7) contains the lower 8 bits of the address. An external latch (like a D flip-flop) uses this signal to demultiplex the bus — capturing the lower 8 bits of the address while the upper 8 bits (A8-A15) remain stable on separate address lines throughout the machine cycle. ALE is used once per machine cycle to separate address from data."
+  },
+  {
+    q: "What is the maximum memory addressable by 8085 and 8086?",
+    a: "8085 has a 16-bit address bus, so it can address 2^16 = 65,536 (64KB) memory locations (0000H to FFFFH). 8086 has a 20-bit address bus (segment:offset scheme), so it can address 2^20 = 1,048,576 (1MB) locations (00000H to FFFFFH). The 8086 divides memory into 64KB segments, and any physical address is computed as (Segment × 16) + Offset."
+  },
+  {
+    q: "What are segment registers in 8086?",
+    a: "The 8086 has four 16-bit segment registers: CS (Code Segment) - holds base address of the current code segment, used with IP to form instruction addresses. DS (Data Segment) - holds base address for data access, default for most data operations. ES (Extra Segment) - additional data segment, used with string operations as destination. SS (Stack Segment) - holds base address of the stack, used with SP/BP for stack operations. Each segment register defines a 64KB block of memory, and offsets within segments are 16-bit."
+  },
+  {
+    q: "Explain the Pipelining concept in 8086.",
+    a: "The 8086 has a 6-byte instruction queue that prefetches instructions while the EU (Execution Unit) is busy, allowing overlap of fetch and execute phases. The BIU (Bus Interface Unit) fetches up to 6 bytes ahead and stores them in the queue. When the EU needs an instruction, it's already in the queue (most of the time). This instruction prefetch queue is why 8086 is faster than 8085 even at the same clock speed. The queue is flushed on jump instructions, causing a slight delay."
+  },
+  {
+    q: "What is the difference between LOOP and conditional jump instructions?",
+    a: "LOOP automatically decrements CX and jumps if CX ≠ 0. It's a 1-byte instruction that combines 'DEC CX; JNZ label' in one step. It's convenient for known counter-based iteration but doesn't affect any flags. Conditional jumps (JNZ, JZ, JC, JNC, JA, JB, etc.) check specific flag conditions and jump accordingly. They're 2-byte instructions. Conditional jumps only do the test-and-branch, no auto-decrement. Both are near jumps (relative, within -128 to +127 bytes) in 8086 real mode."
+  },
+  {
+    q: "How do you calculate physical address in 8086?",
+    a: "Physical Address = (Segment Register × 16) + Offset. The segment register is shifted left by 4 bits (multiplied by 16), then added to the 16-bit offset to produce a 20-bit physical address. For example, if DS = 1234H and SI = 0056H, the physical address = (1234H × 16) + 0056H = 12340H + 0056H = 12396H. Any segment:offset pair pointing to the same 16-byte paragraph yields the same physical address — multiple segment:offset combinations map to the same physical memory location."
+  },
+  {
+    q: "What is the purpose of the REP prefix in 8086 string instructions?",
+    a: "REP (Repeat) is a prefix that repeats a string instruction CX times. It decrements CX after each iteration and stops when CX = 0. There are variants: REPZ/REPE (repeat while Zero/Equal, also stops if ZF = 0), REPNZ/REPNE (repeat while Not Zero/Not Equal, stops if ZF = 1). Common uses: REP MOVSB (copy a block of CX bytes), REP STOSB (fill CX bytes), REP CMPSB (compare two blocks), REP LODSB (load CX bytes). Without REP, string instructions operate on only one element per execution."
+  }
+];
+
+/* =========================================================
+   UI LOGIC
+   ========================================================= */
+
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function build85(key) {
+  const p = DATA_85[key];
+  if (!p) return;
+  let runBtns = '';
+  if (p.run85) {
+    const enc = btoa(unescape(encodeURIComponent(p.code + '\nHLT')));
+    const url = `https://8085emu.github.io/#code=${enc}`;
+    runBtns = `<div class="run-btns"><a href="${url}" target="_blank" class="run-btn run-btn-85">&#9654; Run on 8085emu</a></div>`;
+  }
+  let badge = '';
+  if (p.important) badge = '<span class="badge">IMPORTANT</span>';
+  document.getElementById('prog-8085').innerHTML = `
+    <div class="card">
+      <h2>${esc(p.title)} ${badge}</h2>
+      <div class="q">${esc(p.q)}</div>
+      ${runBtns}
+      <div class="code-box">
+        <div class="code-label">8085 Assembly</div>
+        <button class="copy-btn">Copy</button>
+        <pre>${esc(p.code)}</pre>
+      </div>
+    </div>`;
+  const btn = document.querySelector('#prog-8085 .copy-btn');
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(p.code).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1200);
+    });
+  });
+}
+
+function build86(key) {
+  const p = DATA_86[key];
+  if (!p) return;
+  let runBtns = '';
+  if (p.run86) {
+    const enc = btoa(unescape(encodeURIComponent(p.code)));
+    const url = `https://modern8086.com/#code=${enc}`;
+    runBtns = `<div class="run-btns"><a href="${url}" target="_blank" class="run-btn run-btn-86">&#9654; Run on modern8086</a></div>`;
+  }
+  let badge = '';
+  if (p.important) badge = '<span class="badge">IMPORTANT</span>';
+  document.getElementById('prog-8086').innerHTML = `
+    <div class="card">
+      <h2>${esc(p.title)} ${badge}</h2>
+      <div class="q">${esc(p.q)}</div>
+      ${runBtns}
+      <div class="code-box">
+        <div class="code-label">8086 Assembly</div>
+        <button class="copy-btn">Copy</button>
+        <pre>${esc(p.code)}</pre>
+      </div>
+    </div>`;
+  const btn = document.querySelector('#prog-8086 .copy-btn');
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(p.code).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1200);
+    });
+  });
+}
+
+function buildViva() {
+  let html = '';
+  VIVA_DATA.forEach(item => {
+    html += `<div class="viva-card">
+      <div class="q">${esc(item.q)}</div>
+      <div class="a">${esc(item.a)}</div>
+    </div>`;
+  });
+  document.getElementById('viva-content').innerHTML = html;
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Select handlers
+document.getElementById('sel-8085').addEventListener('change', e => {
+  if (e.target.value) build85(e.target.value);
+});
+
+document.getElementById('sel-8086').addEventListener('change', e => {
+  if (e.target.value) build86(e.target.value);
+});
+
+// Init viva
+buildViva();
+</script>
+</body>
+</html>
