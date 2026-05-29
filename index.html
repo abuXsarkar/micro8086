@@ -945,7 +945,7 @@ function build85(key) {
   if (!p) return;
   let runBtns = '';
   if (p.run85) {
-    const raw = '"          ORG F000\n\n   START: ' + p.code.replace(/\n/g, '\n          ') + '\n          BRK\n          BRK\n          BRK\n          BRK\n          BRK"';
+    const raw = '"          ORG F000\n          ;The ORG statement\n          ;loads code starting\n          ;from f000\n\n          ;Enter you code after\n          ;this line\n   START: ' + p.code.replace(/\n/g, '\n          ') + '\n          "';
     const url = 'https://8085emu.github.io/redir.html?codeString=' + encodeURIComponent(raw);
     runBtns = `<div class="run-btns"><a href="${url}" target="_blank" class="run-btn run-btn-85">&#9654; Run on 8085emu</a></div>`;
   }
